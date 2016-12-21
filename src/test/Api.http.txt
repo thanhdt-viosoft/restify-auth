@@ -1,0 +1,128 @@
+{
+	des: 'Create new account',
+	method: 'POST',
+	url: 'http://localhost:9000/Account',
+	requestHeader: {
+		'content-type': 'multipart/form-data',
+		'pj': '5859f93ff672360eac29a41f'
+	},
+	requestBody: {
+		username: 'thanh1',
+		password: '123',
+		status: 1,
+		email: 'doanthuanthanh88@gmail.com',
+		birth_day: new Date(1988, 10, 6),
+		'file:avatar': 'D:\\logo.png'
+	}
+}
+
+{
+	des: 'Update role for account',
+	method: 'PUT',
+	url: 'http://localhost:9000/Account/5859fb62de0ac62de0713422/Role',
+	requestHeader: {
+		'content-type': 'application/json'
+	},
+	requestBody: {
+		roles: [
+			'user'
+		]
+	}
+}
+
+{
+	des: 'Login',
+	method: 'HEAD',
+	requestHeader: {
+		username: 'thanh',
+		password: '123',
+		'pj': '5859f93ff672360eac29a41f'
+	},
+	url: 'http://localhost:9000/Login'
+}
+
+{
+    des: 'Get my information',
+    method: 'GET',
+    requestHeader: {
+		'token': '5859f93ff672360eac29a41f-585a4b345fb38402a80d6ac5'
+	},
+    url: 'http://localhost:9000/Me'
+}
+
+{
+	des: 'Check authorization',
+	method: 'HEAD',
+	requestHeader: {
+		'token': '5859f93ff672360eac29a41f-585a433fd24b761af0a3151f',
+		'path': '/ShellClass',
+		'actions': 'ADD',
+	},
+	url: 'http://localhost:9000/Authoriz'
+}
+
+{
+    des: 'Remove account in project',
+    method: 'DELETE',
+    url: 'http://localhost:9000/Account/5859fb6fde0ac62de0713423',
+    requestHeader: {
+		'pj': '5859f93ff672360eac29a41f'
+	}
+}
+
+
+================== PROJECT =========================
+
+{
+	des: 'Create new project',
+	method: 'POST',
+	url: 'http://localhost:9000/Project',
+	requestHeader: {
+		'content-type': 'application/json'
+	},
+	requestBody: {
+		name: 'Project 04',
+		status: 1,
+        roles: {
+			admin: [
+				{ path: '^/admin/.*$', actions: '*' }
+			]
+		}
+	}
+}
+
+{
+	des: 'Get list project',
+	method: 'GET',
+	url: 'http://localhost:9000/Project'
+}
+
+{
+	des: 'Update project',
+	method: 'PUT',
+	url: 'http://localhost:9000/Project/5859f93ff672360eac29a41f',
+	requestHeader: {
+		'content-type': 'application/json'
+	},
+	requestBody: {
+		name: 'Project 02',
+		status: 1,
+		roles: {
+			user: [
+				{ path: '^/ShellClass/?.*$', actions: ['ADD', 'EDIT'] }
+			]
+		}
+	}
+}
+
+{
+	des: 'Get project detail',
+	method: 'GET',
+	url: 'http://localhost:9000/Project/5859f93ff672360eac29a41f'
+}
+
+{
+	des: 'Delete project',
+	method: 'DELETE',
+	url: 'http://localhost:9000/Project/585a4817721ff3302c852eab'
+}

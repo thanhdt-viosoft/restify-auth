@@ -1,0 +1,99 @@
+{
+    method: 'POST',
+    url: 'http://localhost:9000/test1',
+    requestHeader: {
+        'content-type': 'multipart/form-data'
+    },
+    requestBody: {
+        'name': 'Product 05',
+        'file:images': [
+            'C:\\Users\\thanhdt\\Desktop\\IMS.zip'
+        ]
+    }
+}
+
+{
+    method: 'PUT',
+    url: 'http://localhost:9000/test1/583d321f84577a13d017d15e',
+    requestHeader: {
+        'content-type': 'multipart/form-data'
+    },
+    requestBody: {
+        'name': 'Product 051',
+        'file:images': [
+            'C:\\Users\\thanhdt\\Desktop\\bg.jpg'
+        ]
+    }
+}
+
+{
+    method: 'GET',
+    url: 'http://localhost:9000/test1'
+}
+
+{
+    method: 'GET',
+    url: 'http://localhost:9000/test1/583d321f84577a13d017d15e'
+}
+
+{
+    method: 'DELETE',
+    url: 'http://localhost:9000/test1/583d2fe358f518168c547fdf'
+}
+
+{
+    method: 'POST',
+    url: 'http://localhost:8000/category',
+    requestHeader: {
+        'content-type': 'application/json'
+    },
+    requestBody: {
+        "name": "Category 2"
+    }
+}
+
+
+
+{
+    method: 'GET',
+    url: 'http://localhost:8000/product'
+}
+
+{
+    method: 'POST',
+    url: 'http://localhost:8000/product',
+    requestHeader: {
+        'content-type': 'multipart/form-data'
+    },
+    requestBody: {
+        'name': 'Product 05',
+        'des': 'Description for product 01',
+        'category_id': 1,
+        'details': JSON.stringify([
+            {'size': 'M', 'quantity': 15},
+            {'size': 'L', 'quantity': 20},
+            {'size': 'S', 'quantity': 10},
+        ]),
+        'money': 100000,
+        'file:images': [
+            'C:\\Users\\thanhdt\\Desktop\\avatar.jpg',
+            'C:\\Users\\thanhdt\\Desktop\\pic1.jpg'
+        ]
+    }
+}
+
+{
+    method: 'PUT',
+    url: 'http://localhost:8000/product/5822a5c9ee5d6659445bf9f1',
+    requestHeader: {
+        'content-type': 'multipart/form-data'
+    },
+    requestBody: {
+        'name': 'Product 03',
+        'category_id': 2, 
+        'money': 5000,
+        'file:images': [
+            'C:\\Users\\thanhdt\\Desktop\\pic2.png'
+        ]
+    }
+}

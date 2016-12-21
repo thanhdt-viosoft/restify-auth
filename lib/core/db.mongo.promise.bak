@@ -1,0 +1,191 @@
+const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
+const _ = require('lodash');
+
+/************************************
+ ** DATABASE ADAPTER FOR MONGODB
+ ** Installation
+ ** `npm install mongodb --save`
+ *************************************/
+
+exports = module.exports = {
+    uuid(id) {
+        return typeof id === 'string' ? ObjectID(id) : id;
+    },
+    open(collection) {
+        const func = {
+            DONE: 0,
+            SUCCESS: 1,
+            FAIL: -1,
+            url: global.appconfig.db.url,
+            db: undefined,
+            collection: collection,
+            getOpts(opts) {
+                if (typeof opts === 'object' && opts.close === undefined) opts.close = func.DONE;
+                else if (typeof opts === 'string') opts = {
+                    collection: opts,
+                    close: func.DONE
+                };
+                else if (typeof opts === 'number') opts = {
+                    close: opts
+                };
+                return opts;
+            },
+            find({
+                count,
+                aggregate,
+                where,
+                fields,
+                sort,
+                page = 1,
+                recordsPerPage = 20
+            }, opts = func.DONE) {
+                opts = func.getOpts(opts);
+                // aggregate = [
+                //     { $match: { created_date: { '$gte': from, '$lte': to }, status: {$gt: -1} } },
+                //     { $group: {_id: { month: { $month: "$created_date" }, day: { $dayOfMonth: "$created_date" }, year: { $year: "$created_date" }}, y: {$sum: "$money"} } }, 
+                //     { $sort: {"_id.year": 1, "_id.month": 1, "_id.day": 1} } 
+                // ];
+                return new Promise((resolve, reject) => {
+                    const collection = func.db.collection(opts.collection || func.collection);
+                    let query;
+                    if (aggregate) {
+                        if (where) aggregate.splice(0, 0, {
+                            $match: where
+                        });
+                        if (sort) aggregate.push({
+                            $sort: sort
+                        });
+                        if (page) aggregate.push({
+                            $skip: (page - 1) * recordsPerPage
+                        });
+                        if (recordsPerPage) aggregate.push({
+                            $limit: recordsPerPage
+                        });
+                        query = collection.aggregate(aggregate);
+                    } else if (count) {
+                        query = collection.count(where, (err, result) => {
+                            if (opts.close === func.DONE) func.close();
+                            if (err) {
+                                if (opts.close === func.FAIL) func.close();
+                                return reject(err);
+                            }
+                            if (opts.close === func.SUCCESS) func.close();
+                            resolve(result);
+                        });
+                        return;
+                    } else {
+                        query = collection.find(where, fields);
+                        if (sort) query = query.sort(sort);
+                        if (page) query = query.skip((page - 1) * recordsPerPage);
+                        if (recordsPerPage) query = query.limit(recordsPerPage);
+                    }
+                    query.toArray((err, result) => {
+                        if (opts.close === func.DONE) func.close();
+                        if (err) {
+                            if (opts.close === func.FAIL) func.close();
+                            return reject(err);
+                        }
+                        if (opts.close === func.SUCCESS) func.close();
+                        resolve(result);
+                    });
+                });
+            },
+            get(_id, opts = func.DONE) {
+                opts = func.getOpts(opts);
+                return new Promise((resolve, reject) => {
+                    const collection = func.db.collection(opts.collection || func.collection);
+                    collection.find({
+                        _id: exports.uuid(_id)
+                    }).toArray((err, result) => {
+                        if (opts.close === func.DONE) func.close();
+                        if (err) {
+                            if (opts.close === func.FAIL) func.close();
+                            return reject(err);
+                        }
+                        if (opts.close === func.SUCCESS) func.close();
+                        resolve(result.length > 0 ? result[0] : undefined);
+                    });
+                });
+            },
+            insert(obj, opts = func.DONE) {
+                opts = func.getOpts(opts);
+                return new Promise((resolve, reject) => {
+                    const collection = func.db.collection(opts.collection || func.collection);
+                    if (obj instanceof Array) {
+                        collection.insertMany(obj, (err, result) => {
+                            if (opts.close === func.DONE) func.close();
+                            if (err) {
+                                if (opts.close === func.FAIL) func.close();
+                                return reject(err);
+                            }
+                            if (opts.close === func.SUCCESS) func.close();
+                            resolve(result);
+                        });
+                    } else {
+                        collection.insert(obj, (err, result) => {
+                            if (opts.close === func.DONE) func.close();
+                            if (err) {
+                                if (opts.close === func.FAIL) func.close();
+                                return reject(err);
+                            }
+                            if (opts.close === func.SUCCESS) func.close();
+                            resolve(result);
+                        });
+                    }
+                });
+            },
+            update(obj0, opts = func.DONE) {
+                opts = func.getOpts(opts);
+                const obj = _.cloneDeep(obj0);
+                delete obj._id;
+                return new Promise((resolve, reject) => {
+                    const collection = func.db.collection(opts.collection || func.collection);
+                    collection.updateOne({
+                        _id: exports.uuid(obj0._id)
+                    }, {
+                        $set: obj
+                    }, (err, result) => {
+                        if (opts.close === func.DONE) func.close();
+                        if (err) {
+                            if (opts.close === func.FAIL) func.close();
+                            return reject(err);
+                        }
+                        if (opts.close === func.SUCCESS) func.close();
+                        resolve(result);
+                    });
+                });
+            },
+            delete(_id, opts = func.DONE) {
+                opts = func.getOpts(opts);
+                return new Promise((resolve, reject) => {
+                    const collection = func.db.collection(opts.collection || func.collection);
+                    collection.deleteOne({
+                        _id: exports.uuid(_id)
+                    }, (err, result) => {
+                        if (opts.close === func.DONE) func.close();
+                        if (err) {
+                            if (opts.close === func.FAIL) func.close();
+                            return reject(err);
+                        }
+                        if (opts.close === func.SUCCESS) func.close();
+                        resolve(result);
+                    });
+                });
+            },
+            close() {
+                if (func.db) {
+                    func.db.close();
+                    delete func.db;
+                }
+            }
+        };
+        return new Promise((resolve, reject) => {
+            MongoClient.connect(func.url, function (err, db) {
+                if (err) return reject(err);
+                func.db = db;
+                resolve(func);
+            });
+        });
+    }
+}

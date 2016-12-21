@@ -1,0 +1,28 @@
+{
+  "name": "restify-core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --expose-gc --harmony-async-await index.js",
+    "gen": "node ./lib/generate/gen.js",
+    "pm2": "pm2 start --node-args=\"--expose-gc --harmony-async-await\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/just4developments/restify-core.git"
+  },
+  "author": "just4developments@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.1.4",
+    "jimp": "^0.2.27",
+    "lodash": "^4.17.2",
+    "memcached": "^2.2.2",
+    "node-uuid": "^1.4.7",
+    "restify": "^4.2.0"
+  },
+  "devDependencies": {
+    "js-beautify": "^1.6.4"
+  }
+}
